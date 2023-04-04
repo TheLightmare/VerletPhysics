@@ -1,0 +1,9 @@
+WIDTH = 1000
+HEIGHT = 1000
+FPS = 60
+TITLE = "My Game"
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
