@@ -21,15 +21,15 @@ def create_cloth(object_group, link_group, mouse_pos):
     for i in range(10):
         objects.append([])
         for j in range(10):
-            obj = sprites.VerletObject(object_group, (mouse_pos[0] + i*50, mouse_pos[1] + j*50), WHITE)
+            obj = sprites.VerletObject(object_group, (mouse_pos[0] + i*50, mouse_pos[1] + j*50), WHITE, 2)
             objects[i].append(obj)
     objects[0][0].is_fixed = True
     objects[-1][0].is_fixed = True
 
     for i in range(len(objects)):
         for j in range(len(objects[i]) - 1):
-            link.Link(link_group, objects[i][j], objects[i][j+1], 50)
+            link.Link(link_group, objects[i][j], objects[i][j+1], 50, True)
     for i in range(len(objects) - 1):
         for j in range(len(objects[i])):
-            link.Link(link_group, objects[i][j], objects[i+1][j], 50)
+            link.Link(link_group, objects[i][j], objects[i+1][j], 50, True)
 

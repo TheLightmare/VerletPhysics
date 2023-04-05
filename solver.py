@@ -39,9 +39,6 @@ class Solver():
         position = pg.Vector2(WIDTH/2, HEIGHT/2)
         radius = WIDTH/2
 
-        # draw the constraint
-        pg.draw.circle(self.screen, RED, position, radius, 2)
-        pg.display.flip()
 
         for obj in self.objects:
             #if the object is outside the constraint

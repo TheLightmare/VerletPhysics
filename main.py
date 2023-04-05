@@ -56,6 +56,11 @@ class Game():
         self.screen.fill(BLACK)
         self.objects.draw(self.screen)
         self.links.draw(self.screen)
+
+        position = pg.Vector2(WIDTH / 2, HEIGHT / 2)
+        radius = WIDTH / 2
+        pg.draw.circle(self.screen, RED, position, radius, 2)
+
         pg.display.flip()
 
 g = Game()
