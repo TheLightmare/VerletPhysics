@@ -29,21 +29,31 @@ class SpawnerObject(pg.sprite.Sprite):
     '''
     Spawns VerletObjects when timer reaches 0.
     '''
-    def __init__(self, game, group, pos, color, radius=10, spawn_rate=1):
+    def __init__(self, game, group, pos, active_color, inactive_color, radius=10, spawn_rate=1):
         pg.sprite.Sprite.__init__(self, group)
         self.game = game
         self.pos = pg.Vector2(pos)
-        self.color = color
+        self.activecolor = active_color
+        self.inactivecolor = inactive_color
+        self.color = self.activecolor
         self.radius = radius
         self.spawn_rate = spawn_rate
         self.timer = 0
         self.image = pg.Surface((self.radius, self.radius))
-        self.image.fill(color)
-        self.image.set_colorkey(color)
+        self.image.fill(self.color)
+        self.image.set_colorkey(self.color)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
 
+        self.active = True
+
+    def toggle(self):
+        self.active = not self.active
+        self.color = self.activecolor if self.active else self.inactivecolor
+
     def update(self):
+        if not self.active:
+            return
         self.timer += self.game.clock.get_time() / 1000.0
         if self.timer > 1 / self.spawn_rate:
             self.timer = 0
