@@ -1,7 +1,6 @@
 import pygame as pg
 
 from settings import *
-import sprites
 
 pg.init()
 

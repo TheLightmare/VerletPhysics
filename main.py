@@ -2,9 +2,8 @@ import pygame as pg
 
 from settings import *
 import solver
-import sprites
+from objects import physics_objects, static_objects, special_objects
 import custom_group
-import link
 import shapes
 
 pg.init()
@@ -18,10 +17,26 @@ class Game():
 
         self.objects = custom_group.VerletGroup()
         self.links = custom_group.LinkGroup()
-        self.solver = solver.Solver(self.screen, self.objects, self.links)
+        self.statics = custom_group.StaticGroup()
+        self.specials = custom_group.SpecialGroup()
+        self.solver = solver.Solver(self.screen, self.objects, self.statics, self.specials, self.links)
 
+
+        self.ball_color = RED
+
+    def init_scene(self):
+        '''
+        Initialize the scene (to be replaced with json files ultimately)
+        :return:
+        '''
+        # create a sink object
+        special_objects.SinkObject(self.specials, pg.Vector2(WIDTH / 2, HEIGHT), BLUE, 100)
+        # create a spawn object
+        special_objects.SpawnerObject(self, self.specials, pg.Vector2(30, 10), GREEN, 10, 5)
 
     def run(self):
+        self.init_scene()
+
         while self.running:
             self.clock.tick(FPS)
             self.events()
@@ -30,9 +45,12 @@ class Game():
 
     def update(self):
         dt = self.clock.get_time() / 1000.0
+        self.specials.update()
         self.solver.update(dt)
 
+
     def events(self):
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
@@ -46,20 +64,27 @@ class Game():
                     shapes.create_cloth(self.objects, self.links, pg.mouse.get_pos())
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    sprites.VerletObject(self.objects, event.pos, RED)
+                    # lerp between all colors
+                    colors = [RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA]
+                    self.ball_color = colors[(colors.index(self.ball_color) + 1) % len(colors)]
+                    physics_objects.VerletObject(self.objects, event.pos, self.ball_color)
                 if event.button == 3:
-                    for obj in self.solver.objects:
-                        if (obj.pos - pg.Vector2(event.pos)).length() < obj.radius:
-                            obj.is_fixed = not obj.is_fixed
+                    if not hasattr(self, 'static_first_point'):
+
+                        self.static_first_point = pg.Vector2(pg.mouse.get_pos())
+                    else:
+                        static_objects.StaticLine(self.statics, self.static_first_point, pg.Vector2(pg.mouse.get_pos()), RED)
+                        del self.static_first_point
 
     def draw(self):
         self.screen.fill(BLACK)
         self.objects.draw(self.screen)
         self.links.draw(self.screen)
+        self.statics.draw(self.screen)
+        self.specials.draw(self.screen)
 
-        position = pg.Vector2(WIDTH / 2, HEIGHT / 2)
-        radius = WIDTH / 2
-        pg.draw.circle(self.screen, RED, position, radius, 2)
+        if hasattr(self, 'static_first_point'):
+            pg.draw.line(self.screen,BLUE, self.static_first_point, pg.mouse.get_pos(), 5)
 
         pg.display.flip()
 

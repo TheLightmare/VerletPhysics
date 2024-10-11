@@ -1,6 +1,6 @@
 import pygame as pg
 from settings import *
-import sprites
+from objects import physics_objects
 import link
 
 pg.init()
@@ -8,7 +8,7 @@ pg.init()
 def create_bag(object_group, link_group, mouse_pos):
     objects = []
     for i in range(10):
-        obj = sprites.VerletObject(object_group, (mouse_pos[0] + i*49, mouse_pos[1]), WHITE)
+        obj = physics_objects.VerletObject(object_group, (mouse_pos[0] + i*49, mouse_pos[1]), WHITE)
         objects.append(obj)
     objects[0].is_fixed = True
     objects[-1].is_fixed = True
@@ -21,7 +21,7 @@ def create_cloth(object_group, link_group, mouse_pos):
     for i in range(10):
         objects.append([])
         for j in range(10):
-            obj = sprites.VerletObject(object_group, (mouse_pos[0] + i*50, mouse_pos[1] + j*50), WHITE, 2)
+            obj = physics_objects.VerletObject(object_group, (mouse_pos[0] + i*50, mouse_pos[1] + j*50), WHITE, 2)
             objects[i].append(obj)
     objects[0][0].is_fixed = True
     objects[-1][0].is_fixed = True

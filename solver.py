@@ -1,14 +1,17 @@
 import pygame as pg
+
+from objects import static_objects, special_objects
 from settings import *
-import link
 
 pg.init()
 
 class Solver():
-    def __init__(self, screen, objects, links):
+    def __init__(self, screen, objects, statics, specials, links):
         self.screen = screen
         self.objects = objects
+        self.specials = specials
         self.links = links
+        self.statics = statics
         self.gravity = pg.Vector2(0.0, 1000.0)
 
     def update(self, dt):
@@ -34,21 +37,22 @@ class Solver():
             link.apply()
 
 
-        #apply other constraint
-
-        position = pg.Vector2(WIDTH/2, HEIGHT/2)
-        radius = WIDTH/2
-
-
-        for obj in self.objects:
-            #if the object is outside the constraint
-            if (obj.pos - position).length() > radius - obj.radius:
-                n = (obj.pos - position).normalize()
-                obj.pos = position + n * (radius - obj.radius)
-
 
     def apply_collisions(self):
         for obj in self.objects:
+            # collisions with special objects
+            for special_obj in self.specials:
+                if type(special_obj) == special_objects.SinkObject:
+                    if (obj.pos - special_obj.pos).length() < special_obj.radius + obj.radius:
+                        obj.kill()
+
+            # collisions with static objects
+            for static_obj in self.statics:
+                # if the static object is a StaticLine
+                if type(static_obj) == static_objects.StaticLine:
+                    static_obj.circle_collision(obj)
+
+            # collisions with VerletObjects
             for obj2 in self.objects:
                 if obj != obj2:
                     if (obj.pos - obj2.pos).length() < obj.radius + obj2.radius:
